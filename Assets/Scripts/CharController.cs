@@ -16,8 +16,8 @@ public class CharController : MonoBehaviour
     public float jumpForce = 10.0f;
     //добавляем боксколлайдер 
     private BoxCollider2D _box;
-    
-    
+
+    bool isAtack;
 
 
     void Start()
@@ -32,7 +32,7 @@ public class CharController : MonoBehaviour
         walk();
         Reflect();
         Jump();
-       
+        Atack();
     }
     
     public bool faceRight = true;
@@ -50,38 +50,52 @@ public class CharController : MonoBehaviour
         //Проверяем знаение минимальной У-координаты коллайдера
 
         bool grounded = false;
+        _animator.SetBool("jump", true);
 
         if (hit != null)
         {         // если под персонажем обнаружен коллайдер 
             grounded = true;
+            _animator.SetBool("jump", false);
         }
 
         if (grounded && Input.GetKeyDown(KeyCode.Space))
         {
 
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            
             //добавил экземпляр класса Rigidbody.AddForce-вектор напрвленный вверх на силу.
-            _animator.SetBool("jumping", true);
+
         }
     }
 
     void walk () 
     {
         _animator.SetFloat("speed",moveVector.sqrMagnitude);
-        _animator.SetBool("run",false);
+        
         // добавил ускорение при зажатии шифта
-        if (Input.GetKey(KeyCode.LeftShift))  
+        if (Input.GetKey(KeyCode.LeftShift))
         {
             _animator.SetBool("run",true);
             speed = 12.0f;
+            
         }
         else   
         {
             speed = 2.0f;
+            _animator.SetBool("run", false);
         };
         moveVector.x = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(moveVector.x * speed, rb.velocity.y);
        // rb.AddForce(moveVector * speed); // физика
+    }
+
+    void Atack()
+    {
+        _animator.SetBool("atack", false);
+        if (Input.GetButtonDown("Fire1"))
+        {
+            _animator.SetBool("atack", true);
+        }
     }
 
     void Reflect ()
